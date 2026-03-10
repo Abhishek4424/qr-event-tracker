@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Event Tracker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="header-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 7V5a2 2 0 012-2h2"/><path d="M17 3h2a2 2 0 012 2v2"/>
+                    <path d="M21 17v2a2 2 0 01-2 2h-2"/><path d="M7 21H5a2 2 0 01-2-2v-2"/>
+                    <line x1="7" y1="12" x2="17" y2="12"/>
+                </svg>
+            </div>
+            <div>
+                <div class="header-title">QR Event Tracker</div>
+                <div class="header-subtitle">Generate · Track · Analyze Attendee Engagement</div>
+            </div>
+        </div>
+        <nav class="tabs">
+            <button class="tab active" data-tab="generate">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="4" height="4"/></svg>
+                Generate
+            </button>
+            <button class="tab" data-tab="analytics">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/></svg>
+                Analytics
+            </button>
+            <button class="tab" data-tab="persona">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                Personas
+            </button>
+            <button class="tab" data-tab="live">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                Live Feed
+            </button>
+        </nav>
+    </header>
+
+    <!-- Event Selector -->
+    <div class="container">
+        <div class="event-selector" id="event-selector">
+            <select id="event-select" class="event-dropdown">
+                <option value="">— Select Event —</option>
+            </select>
+            <button class="btn btn-sm btn-accent" onclick="showNewEventModal()">+ New Event</button>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <main class="container">
+
+        <!-- ═══ GENERATE TAB ═══ -->
+        <section id="tab-generate" class="tab-content active">
+            <div class="generate-grid">
+                <div class="generate-form">
+                    <!-- Step 1: UTM -->
+                    <div class="card">
+                        <div class="step-header"><span class="step-badge step-1">1</span> Placement & UTM Tags</div>
+                        <div class="form-group">
+                            <label>Placement Label</label>
+                            <input type="text" id="qr-label" placeholder="e.g., Main Stage Banner">
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>utm_source</label>
+                                <input type="text" id="qr-source" value="qrcode" placeholder="qrcode">
+                                <span class="hint">Always 'qrcode' for QR tracking</span>
+                            </div>
+                            <div class="form-group">
+                                <label>utm_medium</label>
+                                <input type="text" id="qr-medium" value="event_print" placeholder="event_print">
+                                <span class="hint">e.g., event_print, event_standee</span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>utm_campaign</label>
+                                <input type="text" id="qr-campaign" placeholder="logistics_summit_2026">
+                                <span class="hint">Event campaign identifier</span>
+                            </div>
+                            <div class="form-group">
+                                <label>utm_content (Placement ID)</label>
+                                <input type="text" id="qr-content" placeholder="main_stage_banner">
+                                <span class="hint">Unique per physical QR location</span>
+                            </div>
+                        </div>
+                        <div id="tagged-url-preview" class="url-preview" style="display:none">
+                            <div class="url-preview-label">Tagged URL Preview</div>
+                            <div class="url-preview-text" id="preview-url-text"></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Appearance -->
+                    <div class="card">
+                        <div class="step-header"><span class="step-badge step-2">2</span> QR Appearance</div>
+                        <div class="appearance-row">
+                            <div class="form-group">
+                                <label>Foreground Color</label>
+                                <div class="color-picker" id="color-picker">
+                                    <button class="color-swatch active" data-color="#0F2B3C" style="background:#0F2B3C"></button>
+                                    <button class="color-swatch" data-color="#1a56db" style="background:#1a56db"></button>
+                                    <button class="color-swatch" data-color="#7c3aed" style="background:#7c3aed"></button>
+                                    <button class="color-swatch" data-color="#dc2626" style="background:#dc2626"></button>
+                                    <button class="color-swatch" data-color="#059669" style="background:#059669"></button>
+                                    <button class="color-swatch" data-color="#000000" style="background:#000000"></button>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Error Correction</label>
+                                <select id="qr-ec">
+                                    <option value="H">High (30%)</option>
+                                    <option value="Q">Quartile (25%)</option>
+                                    <option value="M">Medium (15%)</option>
+                                    <option value="L">Low (7%)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-full" id="btn-generate" onclick="generateQR()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="4" height="4"/></svg>
+                        Generate QR Code
+                    </button>
+                </div>
+
+                <!-- QR Preview -->
+                <div class="preview-panel" id="preview-panel">
+                    <div class="preview-label">QR PREVIEW</div>
+                    <div class="preview-box" id="preview-box">
+                        <div class="preview-placeholder">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"><rect x="2" y="2" width="8" height="8" rx="1"/><rect x="14" y="2" width="8" height="8" rx="1"/><rect x="2" y="14" width="8" height="8" rx="1"/><rect x="14" y="14" width="4" height="4"/></svg>
+                            <span>Select event &<br>fill UTM fields</span>
+                        </div>
+                    </div>
+                    <div id="download-btns" class="download-btns" style="display:none">
+                        <button class="btn btn-dark btn-sm" onclick="downloadQR('jpeg')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg> JPEG
+                        </button>
+                        <button class="btn btn-outline btn-sm" onclick="downloadQR('png')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg> PNG
+                        </button>
+                        <button class="btn btn-outline btn-sm" onclick="downloadQR('svg')">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg> SVG
+                        </button>
+                    </div>
+                    <div id="qr-meta" class="qr-meta" style="display:none"></div>
+                    <div id="qr-tags" class="qr-tags" style="display:none"></div>
+                    <div id="qr-scan-url" class="qr-scan-url" style="display:none">
+                        <div class="url-preview-label">Scan URL (encoded in QR)</div>
+                        <div class="url-preview-text" id="scan-url-text"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Existing QR Codes for Event -->
+            <div class="card" style="margin-top:20px" id="existing-qrs-section">
+                <div class="card-header">
+                    <h3>QR Codes for This Event</h3>
+                </div>
+                <div id="existing-qrs-table"></div>
+            </div>
+        </section>
+
+        <!-- ═══ ANALYTICS TAB ═══ -->
+        <section id="tab-analytics" class="tab-content">
+            <div class="stats-grid" id="stats-grid"></div>
+            <div class="card" id="timeline-card">
+                <div class="card-header">
+                    <h3>Scan Timeline — Hourly Distribution</h3>
+                    <p class="card-subtitle">Identify which sessions or time slots drive the most scans</p>
+                </div>
+                <div id="timeline-chart" class="chart-area"></div>
+            </div>
+            <div class="card" id="placement-card">
+                <div class="card-header">
+                    <h3>QR Placement Performance</h3>
+                    <p class="card-subtitle">Compare which physical QR placement drives the most engagement (via utm_content)</p>
+                </div>
+                <div id="placement-table"></div>
+            </div>
+        </section>
+
+        <!-- ═══ PERSONA TAB ═══ -->
+        <section id="tab-persona" class="tab-content">
+            <div class="persona-grid" id="persona-grid"></div>
+            <div class="card" id="persona-summary">
+                <div class="card-header">
+                    <h3>Inferred Attendee Persona Summary</h3>
+                    <p class="card-subtitle">Aggregated profile based on device, location, and behavior signals</p>
+                </div>
+                <div id="persona-cards" class="persona-cards-grid"></div>
+            </div>
+        </section>
+
+        <!-- ═══ LIVE FEED TAB ═══ -->
+        <section id="tab-live" class="tab-content">
+            <div class="card live-header-card">
+                <div class="live-header">
+                    <div class="live-indicator">
+                        <div class="live-dot"></div>
+                        <span class="live-label">Live Scan Feed</span>
+                        <span class="live-sub">Auto-refreshes every 10 seconds</span>
+                    </div>
+                    <div class="live-actions">
+                        <span id="live-timestamp" class="live-sub"></span>
+                        <button class="btn btn-sm btn-outline" onclick="loadLiveFeed()">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+                            Refresh
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div id="live-feed-table"></div>
+            </div>
+            <div class="export-row">
+                <button class="btn btn-sm btn-outline" onclick="exportData('csv')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+                    Export CSV
+                </button>
+                <button class="btn btn-sm btn-outline" onclick="exportData('json')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 3v12m0 0l-4-4m4 4l4-4"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+                    Export JSON
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- New Event Modal -->
+    <div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
+        <div class="modal" onclick="event.stopPropagation()">
+            <h3>Create New Event</h3>
+            <div class="form-group">
+                <label>Event Name</label>
+                <input type="text" id="new-event-name" placeholder="e.g., India Logistics Summit 2026">
+            </div>
+            <div class="form-group">
+                <label>Login Page URL</label>
+                <input type="text" id="new-event-url" placeholder="https://app.roado.com/login">
+            </div>
+            <div class="form-group">
+                <label>Description (optional)</label>
+                <input type="text" id="new-event-desc" placeholder="Annual logistics conference">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline btn-sm" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary btn-sm" onclick="createNewEvent()">Create Event</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

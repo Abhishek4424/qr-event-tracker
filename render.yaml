@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: qr-event-tracker
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python app.py"
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: BASE_URL
+        sync: false  # Will be set automatically after first deploy
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DATABASE_PATH
+        value: /var/data/qr_tracker.db
+    disk:
+      name: qr-data
+      mountPath: /var/data
+      sizeGB: 1
