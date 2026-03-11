@@ -25,7 +25,15 @@ from user_agents import parse as parse_ua
 # ─── App Setup ───────────────────────────────────────────────
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev-secret-change-in-prod")
-DATABASE = os.environ.get("DATABASE_PATH", "qr_tracker.db")
+
+# Database path - for Render, use /var/data for persistence
+if os.environ.get("RENDER"):
+    # On Render, use persistent disk
+    os.makedirs("/var/data", exist_ok=True)
+    DATABASE = "/var/data/qr_tracker.db"
+else:
+    # Local development
+    DATABASE = os.environ.get("DATABASE_PATH", "qr_tracker.db")
 
 # Base URL for QR codes - set this to your production URL when deployed
 # e.g., "https://your-app.onrender.com" or "https://qr-tracker.yourdomain.com"

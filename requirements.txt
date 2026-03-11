@@ -3,3 +3,5 @@ qrcode[pil]>=7.4
 Pillow>=10.0.0
 user-agents>=2.2.0
 gunicorn>=21.2.0
+# For PostgreSQL support (uncomment if using PostgreSQL)
+# psycopg2-binary>=2.9.9

@@ -11,9 +11,11 @@ services:
         sync: false  # Will be set automatically after first deploy
       - key: SECRET_KEY
         generateValue: true
-      - key: DATABASE_PATH
-        value: /var/data/qr_tracker.db
-    disk:
-      name: qr-data
-      mountPath: /var/data
-      sizeGB: 1
+      - key: RENDER
+        value: true
+    # Note: Persistent disk requires a paid Render plan
+    # Uncomment below lines if you upgrade to paid plan:
+    # disk:
+    #   name: qr-data
+    #   mountPath: /var/data
+    #   sizeGB: 1

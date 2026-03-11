@@ -94,17 +94,55 @@ pip install pytest
 python -m pytest tests/ -v
 ```
 
+## ⚠️ IMPORTANT: Data Persistence
+
+**SQLite databases are NOT persistent on free hosting tiers!** Your data will be lost when:
+- The server restarts or redeploys
+- The container spins down after inactivity
+- You push new code updates
+
+### Solutions for Persistent Data:
+
+#### Option 1: Use PostgreSQL (Recommended for Production)
+Most platforms offer free PostgreSQL databases:
+- **Render**: Free PostgreSQL included
+- **Railway**: PostgreSQL add-on available
+- **Supabase**: Free PostgreSQL database
+- **Neon**: Serverless PostgreSQL
+
+To use PostgreSQL:
+1. Use `app_postgres.py` instead of `app.py`
+2. Set `DATABASE_URL` environment variable
+3. Install `psycopg2-binary` dependency
+
+#### Option 2: Paid Hosting with Persistent Disk
+- **Render**: $7/month for persistent disk
+- **Railway**: $5/month includes persistent storage
+- **Fly.io**: Includes persistent volumes
+
+#### Option 3: External Database Services
+- **Turso**: SQLite in the cloud (free tier)
+- **PlanetScale**: MySQL-compatible (free tier)
+- **MongoDB Atlas**: NoSQL option (free tier)
+
 ## Deployment Options
 
-### Railway / Render / Fly.io
+### Render (Free with PostgreSQL)
 
 1. Push to GitHub
-2. Connect your repo to Railway/Render/Fly.io
-3. Set environment variables:
-   - `SECRET_KEY` — random string for session security
-   - `DATABASE_PATH` — `/data/qr_tracker.db` (with persistent volume)
-   - `PORT` — `5000`
-4. For persistent data, mount a volume at `/data`
+2. Create free PostgreSQL database on Render
+3. Deploy web service with environment variables:
+   - `DATABASE_URL` — from PostgreSQL instance
+   - `SECRET_KEY` — generate a random string
+   - `BASE_URL` — your Render app URL
+   - `PORT` — `10000`
+
+### Railway / Fly.io
+
+1. Push to GitHub
+2. Connect your repo
+3. Add PostgreSQL database
+4. Set environment variables as above
 
 ### GitHub Codespaces
 
